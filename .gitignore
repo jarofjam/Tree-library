@@ -2,6 +2,7 @@
 
 /.idea 
 /out
+/src/test
 
 # Test
 test.java
