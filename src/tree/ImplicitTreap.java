@@ -74,7 +74,7 @@ public class ImplicitTreap<T> {
        root = merge(L, R);
     }
 
-    public int size() {
+    public int getSize() {
         return sizeOf(root);
     }
 
@@ -183,17 +183,11 @@ public class ImplicitTreap<T> {
         }
 
         Node(T value) {
-            this.value = value;
-            this.y = Math.random();
-            this.L = null;
-            this.R = null;
+            this(value, Math.random(), null, null);
         }
 
         Node(T value, Node L, Node R) {
-            this.value = value;
-            this.y = Math.random();
-            this.L = L;
-            this.R = R;
+            this(value, Math.random(), L, R);
         }
 
         Node(T value, double y, Node L, Node R) {

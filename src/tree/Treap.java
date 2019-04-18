@@ -66,7 +66,7 @@ public class Treap<T extends Comparable<? super T>> {
         return M != null;
     }
 
-    public int size() {
+    public int getSize() {
         return this.size;
     }
 
@@ -183,17 +183,11 @@ public class Treap<T extends Comparable<? super T>> {
         Node R;
 
         Node(T x) {
-            this.x = x;
-            this.y = Math.random();
-            this.L = null;
-            this.R = null;
+            this(x, Math.random(), null, null);
         }
 
         Node(T x, Node L, Node R) {
-            this(x);
-
-            this.L = L;
-            this.R = R;
+            this(x, Math.random(), L, R);
         }
 
         Node(T x, double y, Node L, Node R) {

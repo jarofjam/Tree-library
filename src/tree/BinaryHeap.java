@@ -1,13 +1,14 @@
 package tree;
 
 import java.util.Arrays;
+import java.util.Collection;
 
-public class BinaryHeap {
+public class BinaryHeap<T extends Comparable<? super T> > {
 
-    private int[] list;
+    private Object[] list;
     private int size = 0;
 
-    private static final int DEFAULT_INITIAL_CAPACITY = 11;
+    private static final int DEFAULT_INITIAL_CAPACITY = 12;
 
     public BinaryHeap() {
         this(DEFAULT_INITIAL_CAPACITY);
@@ -17,7 +18,15 @@ public class BinaryHeap {
         if (initialCapacity < 1)
             throw new IllegalArgumentException();
 
-        list = new int[initialCapacity];
+        list = new Object[initialCapacity];
+    }
+
+    public BinaryHeap(Collection<? extends T> input) {
+        this.size = input.size();
+        list = Arrays.copyOf(input.toArray(), size);
+
+        for (int i = size / 2; i >= 0; i--)
+            siftDown(i);
     }
 
     public int getSize() {
@@ -28,34 +37,38 @@ public class BinaryHeap {
         return size == 0;
     }
 
-    public void add(int value) {
-        size++;
+    public void add(T value) {
         if (size == list.length)
             increaseCapacity();
 
         list[size] = value;
+        size++;
 
-        siftUp(size);
+        siftUp(size - 1);
     }
 
-    public int peek() {
+    public T peek() {
         if (size == 0)
-            return 0;
+            return null;
 
-        return list[0];
+        return (T) list[0];
     }
 
-    public int poll() {
+    public T poll() {
         if (size == 0)
-            return 0;
+            return null;
 
-        int result = list[0];
+        Object result =  list[0];
 
-        list[0] = list[size];
+        list[0] = list[size - 1];
         size--;
         siftDown(0);
 
-        return result;
+        return (T) result;
+    }
+
+    public Object[] toArray() {
+        return Arrays.copyOf(list, size);
     }
 
     private void increaseCapacity() {
@@ -71,10 +84,10 @@ public class BinaryHeap {
             int rightChild = 2 * i + 2;
             int j = leftChild;
 
-            if (rightChild < size && list[rightChild] < list[leftChild])
+            if (rightChild < size && ((T) list[rightChild]).compareTo((T) list[leftChild]) < 0)
                 j = rightChild;
 
-            if (list[i] <= list[j])
+            if (((T) list[i]).compareTo((T) list[j]) <= 0)
                 break;
 
             swap(i, j);
@@ -83,15 +96,15 @@ public class BinaryHeap {
     }
 
     private void siftUp(int i) {
-        while (list[i] < list[(i - 1) / 2]) {
+        while (i > 0 && ((T) list[i]).compareTo((T) list[(i - 1) / 2]) < 0) {
             swap(i, (i - 1) / 2);
             i = (i - 1) / 2;
         }
     }
 
     private void swap(int i, int j) {
-        int c = list[i];
-        list[i] = j;
+        Object c = list[i];
+        list[i] = list[j];
         list[j] = c;
     }
 
