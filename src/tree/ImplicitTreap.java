@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ImplicitTreap {
+public class ImplicitTreap<T> {
 
     private Node root;
 
@@ -12,43 +12,42 @@ public class ImplicitTreap {
         root = null;
     }
 
-    public void add(int c) {
-        Node N = new Node(c);
+    public void add(T value) {
+        Node N = new Node(value);
         root = merge(root, N);
     }
 
-    public int get(int index) {
+    public T get(int index) {
         checkBounds(index);
 
         Node L, R;
 
         PairOfNodes pair = split(root, index);
-        L = pair.getL();
         R = pair.getR();
 
         pair = split(R, 1);
         L = pair.getL();
 
-        return L == null ? 0 : L.c;
+        return L == null ? null : L.value;
     }
 
-    public void put(int index, int c) {
+    public void put(int index, T value) {
         checkBounds(index);
 
         PairOfNodes pair = split(root, index);
 
         Node L = pair.getL();
         Node R = pair.getR();
-        Node M = new Node(c);
+        Node M = new Node(value);
 
         root = merge(merge(L, M), R);
     }
 
-    public void set(int index, int c) {
+    public void set(int index, T value) {
         checkBounds(index);
 
         Node L, R;
-        Node N = new Node(c);
+        Node N = new Node(value);
 
         PairOfNodes pair = split(root, index);
         L = pair.getL();
@@ -92,18 +91,18 @@ public class ImplicitTreap {
         if (root == null) {
             return "[]";
         }
-        List<Integer> ar = new ArrayList<Integer>();
+        List<T> ar = new ArrayList<T>();
         walkInOrder(root, ar);
         return ar.stream()
                 .map(n -> String.valueOf(n))
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private void walkInOrder(Node N, List<Integer> ar) {
+    private void walkInOrder(Node N, List<T> ar) {
         if (N.L != null)
             walkInOrder(N.L, ar);
 
-        ar.add(N.c);
+        ar.add(N.value);
 
         if (N.R != null)
             walkInOrder(N.R, ar);
@@ -117,9 +116,9 @@ public class ImplicitTreap {
         Node N;
 
         if (L.y > R.y)
-            N = new Node(L.c, L.y, L.L, merge(L.R, R));
+            N = new Node(L.value, L.y, L.L, merge(L.R, R));
         else
-            N = new Node(R.c, R.y, merge(L, R.L), R.R);
+            N = new Node(R.value, R.y, merge(L, R.L), R.R);
 
         N.recalcSize();
         return N;
@@ -142,7 +141,7 @@ public class ImplicitTreap {
                 newNode = pair.getL();
                 R = pair.getR();
             }
-            L = new Node(N.c, N.y, N.L, newNode);
+            L = new Node(N.value, N.y, N.L, newNode);
             L.recalcSize();
         } else {
             if (N.L == null) {
@@ -152,7 +151,7 @@ public class ImplicitTreap {
                 L = pair.getL();
                 newNode = pair.getR();
             }
-            R = new Node(N.c, N.y, newNode, N.R);
+            R = new Node(N.value, N.y, newNode, N.R);
             R.recalcSize();
         }
 
@@ -172,8 +171,8 @@ public class ImplicitTreap {
     }
 
     private class Node {
+        T value;
         double y;
-        int c;
         int size;
 
         Node L;
@@ -183,22 +182,22 @@ public class ImplicitTreap {
             size = 1;
         }
 
-        Node(int c) {
-            this.c = c;
+        Node(T value) {
+            this.value = value;
             this.y = Math.random();
             this.L = null;
             this.R = null;
         }
 
-        Node(int c, Node L, Node R) {
-            this(c);
-
+        Node(T value, Node L, Node R) {
+            this.value = value;
+            this.y = Math.random();
             this.L = L;
             this.R = R;
         }
 
-        Node(int c, double y, Node L, Node R) {
-            this.c = c;
+        Node(T value, double y, Node L, Node R) {
+            this.value = value;
             this.y = y;
             this.L = L;
             this.R = R;
