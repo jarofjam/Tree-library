@@ -1,7 +1,7 @@
 package tree;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Treap<T extends Comparable<? super T>> {
@@ -10,7 +10,6 @@ public class Treap<T extends Comparable<? super T>> {
     private int size;
 
     public Treap() {
-        size = 0;
         root = null;
     }
 
@@ -69,6 +68,10 @@ public class Treap<T extends Comparable<? super T>> {
 
     public int size() {
         return this.size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     public void clear() {
@@ -173,8 +176,8 @@ public class Treap<T extends Comparable<? super T>> {
     }
 
     private class Node {
-        final T x;
-        final double y;
+        T x;
+        double y;
 
         Node L;
         Node R;
