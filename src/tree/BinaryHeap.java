@@ -1,10 +1,8 @@
 package tree;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 
-public class BinaryHeap<T> {
+public class BinaryHeap<T> implements Iterable<T> {
 
     private Object[] list;
     private int size = 0;
@@ -79,6 +77,11 @@ public class BinaryHeap<T> {
 
     public Object[] toArray() {
         return Arrays.copyOf(list, size);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new BinaryHeapIterator();
     }
 
     private void increaseCapacity() {
@@ -185,6 +188,29 @@ public class BinaryHeap<T> {
         Object c = list[i];
         list[i] = list[j];
         list[j] = c;
+    }
+
+    private class BinaryHeapIterator implements Iterator<T> {
+        private int cursor = 0;
+
+        @Override
+        public boolean hasNext() {
+            return cursor < size;
+        }
+
+        @Override
+        public T next() {
+            if (cursor < size) {
+                return (T) list[cursor++];
+            }
+
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }
