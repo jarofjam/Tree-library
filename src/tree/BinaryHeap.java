@@ -2,7 +2,7 @@ package tree;
 
 import java.util.*;
 
-public class BinaryHeap<T> implements Iterable<T> {
+public class BinaryHeap<T> implements Heap<T> {
 
     private Object[] list;
     private int size = 0;
@@ -39,14 +39,23 @@ public class BinaryHeap<T> implements Iterable<T> {
             siftDown(i);
     }
 
+    @Override
     public int getSize() {
         return size;
     }
 
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    @Override
+    public void clear() {
+        list = new Object[DEFAULT_INITIAL_CAPACITY];
+        size = 0;
+    }
+
+    @Override
     public void add(T value) {
         if (size == list.length)
             increaseCapacity();
@@ -56,6 +65,7 @@ public class BinaryHeap<T> implements Iterable<T> {
         siftUp(size - 1);
     }
 
+    @Override
     public T peek() {
         if (size == 0)
             return null;
@@ -63,6 +73,7 @@ public class BinaryHeap<T> implements Iterable<T> {
         return (T) list[0];
     }
 
+    @Override
     public T poll() {
         if (size == 0)
             return null;
@@ -75,6 +86,7 @@ public class BinaryHeap<T> implements Iterable<T> {
         return result;
     }
 
+    @Override
     public Object[] toArray() {
         return Arrays.copyOf(list, size);
     }

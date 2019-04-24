@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class LeftistHeap<T> implements Iterable<T> {
+public class LeftistHeap<T> implements Heap<T> {
 
     private Node root;
     private final Comparator<T> comparator;
@@ -20,6 +20,7 @@ public class LeftistHeap<T> implements Iterable<T> {
         this.comparator = comparator;
     }
 
+    @Override
     public void add(T value) {
         if (root == null) {
             root = new Node(value);
@@ -31,6 +32,7 @@ public class LeftistHeap<T> implements Iterable<T> {
         size++;
     }
 
+    @Override
     public T peek() {
         if (size == 0)
             return null;
@@ -38,6 +40,7 @@ public class LeftistHeap<T> implements Iterable<T> {
         return root.value;
     }
 
+    @Override
     public T poll() {
         if (size == 0)
             return null;
@@ -46,28 +49,32 @@ public class LeftistHeap<T> implements Iterable<T> {
 
         root = merge(root.L, root.R);
         size--;
-        
+
         return result;
     }
 
+    @Override
     public int getSize() {
         return size;
     }
 
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    @Override
     public void clear() {
         root = null;
         size = 0;
     }
 
+    @Override
     public Object[] toArray() {
         if (size == 0)
             return new Object[0];
 
-        ArrayList<T> ar = new ArrayList<>(size);
+        List<T> ar = new ArrayList<>(size);
         walkInOrder(root, ar);
 
         return ar.toArray();
@@ -139,7 +146,7 @@ public class LeftistHeap<T> implements Iterable<T> {
         return N;
     }
 
-    private void walkInOrder(Node N, ArrayList<T> ar) {
+    private void walkInOrder(Node N, List<T> ar) {
         if (N.L != null)
             walkInOrder(N.L, ar);
 
