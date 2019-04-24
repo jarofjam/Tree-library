@@ -84,6 +84,17 @@ public class BinaryHeap<T> implements Iterable<T> {
         return new BinaryHeapIterator();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < size; i++) {
+            sb.append(list[i]);
+            if (i != size - 1)
+                sb.append(", ");
+        }
+        return sb.append("]").toString();
+    }
+
     private void increaseCapacity() {
         int oldCapacity = list.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1) + 1;
