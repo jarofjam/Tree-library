@@ -1,16 +1,24 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Treap<T extends Comparable<? super T>> {
+public class Treap<T> implements Iterable<T> {
 
     private Node root;
+    private final Comparator<T> comparator;
     private int size;
 
     public Treap() {
+        this(null);
+    }
+
+    public Treap(Comparator<T> comparator) {
         root = null;
+        this.comparator = comparator;
     }
 
     public void add(T x) {
@@ -79,12 +87,27 @@ public class Treap<T extends Comparable<? super T>> {
         size = 0;
     }
 
+    public Object[] toArray() {
+        if (size == 0)
+            return new Object[0];
+
+        List<T> ar = new ArrayList<>(size);
+        walkInOrder(root, ar);
+
+        return ar.toArray();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new TreapIterator();
+    }
+
     @Override
     public String toString() {
         if (root == null) {
             return "[]";
         }
-        List<T> ar = new ArrayList<T>();
+        List<T> ar = new ArrayList<>(size);
         walkInOrder(root, ar);
         return ar.stream()
                 .map(n -> String.valueOf(n))
@@ -121,7 +144,16 @@ public class Treap<T extends Comparable<? super T>> {
         Node R;
         Node newNode = null;
 
-        if (N.x.compareTo(x) <= 0) {
+        boolean compareResault;
+        if (comparator == null) {
+            Comparable<? super T> value = (Comparable<? super T>) N.x;
+            compareResault = value.compareTo(x) <= 0;
+        } else {
+            T value = (T) N.x;
+            compareResault = comparator.compare(value, x) <= 0;
+        }
+
+        if (compareResault) {
             if (N.R == null) {
                 R = null;
             } else {
@@ -152,7 +184,16 @@ public class Treap<T extends Comparable<? super T>> {
         Node R;
         Node newNode = null;
 
-        if (N.x.compareTo(x) < 0) {
+        boolean compareResault;
+        if (comparator == null) {
+            Comparable<? super T> value = (Comparable<? super T>) N.x;
+            compareResault = value.compareTo(x) < 0;
+        } else {
+            T value = (T) N.x;
+            compareResault = comparator.compare(value, x) < 0;
+        }
+
+        if (compareResault) {
             if (N.R == null) {
                 R = null;
             } else {
@@ -175,7 +216,7 @@ public class Treap<T extends Comparable<? super T>> {
         return new PairOfNodes(L, R);
     }
 
-    private class Node {
+    private final class Node {
         T x;
         double y;
 
@@ -198,7 +239,7 @@ public class Treap<T extends Comparable<? super T>> {
         }
     }
 
-    private class PairOfNodes {
+    private final class PairOfNodes {
         private Node L;
         private Node R;
 
@@ -213,6 +254,31 @@ public class Treap<T extends Comparable<? super T>> {
         PairOfNodes(Node L, Node R) {
             this.L = L;
             this.R = R;
+        }
+    }
+
+    private final class TreapIterator implements Iterator<T> {
+
+        private List<T> list = new ArrayList<>(size);
+        int cursor = 0;
+
+        TreapIterator() {
+            walkInOrder(root, list);
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+        @Override
+        public T next() {
+            return list.get(cursor++);
         }
     }
 }
