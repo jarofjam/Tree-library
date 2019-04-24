@@ -2,13 +2,10 @@ package tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class Treap<T> implements Iterable<T> {
+public class Treap<T> extends TreeStructured<T> implements Tree<T> {
 
-    private Node root;
     private final Comparator<T> comparator;
     private int size;
 
@@ -74,6 +71,7 @@ public class Treap<T> implements Iterable<T> {
         return M != null;
     }
 
+    @Override
     public int getSize() {
         return this.size;
     }
@@ -87,44 +85,6 @@ public class Treap<T> implements Iterable<T> {
         size = 0;
     }
 
-    public Object[] toArray() {
-        if (size == 0)
-            return new Object[0];
-
-        List<T> ar = new ArrayList<>(size);
-        walkInOrder(root, ar);
-
-        return ar.toArray();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new TreapIterator();
-    }
-
-    @Override
-    public String toString() {
-        if (root == null) {
-            return "[]";
-        }
-        List<T> ar = new ArrayList<>(size);
-        walkInOrder(root, ar);
-        return ar.stream()
-                .map(n -> String.valueOf(n))
-                .collect(Collectors.joining(", ", "[", "]"));
-    }
-
-    private void walkInOrder(Node N, List<T> ar) {
-        if (N.L != null)
-            walkInOrder(N.L, ar);
-
-        ar.add(N.x);
-
-        if (N.R != null)
-            walkInOrder(N.R, ar);
-
-    }
-
     private Node merge(Node L, Node R) {
         if (L == null) return R;
         if (R == null) return L;
@@ -136,7 +96,8 @@ public class Treap<T> implements Iterable<T> {
 
     }
 
-    private PairOfNodes leftSplit(Node N, T x) {
+    private PairOfNodes leftSplit(AbstractNode abstractNode, T x) {
+        Node N = (Node) abstractNode;
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -176,7 +137,8 @@ public class Treap<T> implements Iterable<T> {
         return new PairOfNodes(L, R);
     }
 
-    private PairOfNodes rightSplit(Node N, T x) {
+    private PairOfNodes rightSplit(AbstractNode abstractNode, T x) {
+        Node N = (Node) abstractNode;
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -216,7 +178,7 @@ public class Treap<T> implements Iterable<T> {
         return new PairOfNodes(L, R);
     }
 
-    private final class Node {
+    private final class Node extends AbstractNode {
         T x;
         double y;
 
@@ -237,6 +199,21 @@ public class Treap<T> implements Iterable<T> {
             this.L = L;
             this.R = R;
         }
+
+        @Override
+        T getValue() {
+            return x;
+        }
+
+        @Override
+        Node getL() {
+            return L;
+        }
+
+        @Override
+        Node getR() {
+            return R;
+        }
     }
 
     private final class PairOfNodes {
@@ -254,31 +231,6 @@ public class Treap<T> implements Iterable<T> {
         PairOfNodes(Node L, Node R) {
             this.L = L;
             this.R = R;
-        }
-    }
-
-    private final class TreapIterator implements Iterator<T> {
-
-        private List<T> list = new ArrayList<>(size);
-        int cursor = 0;
-
-        TreapIterator() {
-            walkInOrder(root, list);
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return cursor != size;
-        }
-
-        @Override
-        public T next() {
-            return list.get(cursor++);
         }
     }
 }

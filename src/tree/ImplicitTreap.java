@@ -1,13 +1,9 @@
 package tree;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ImplicitTreap<T> implements Iterable<T>{
-
-    private Node root;
+public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
 
     public ImplicitTreap() {
         root = null;
@@ -15,7 +11,7 @@ public class ImplicitTreap<T> implements Iterable<T>{
 
     public void add(T value) {
         Node N = new Node(value);
-        root = merge(root, N);
+        root = merge((Node) root, N);
     }
 
     public T get(int index) {
@@ -75,6 +71,7 @@ public class ImplicitTreap<T> implements Iterable<T>{
        root = merge(L, R);
     }
 
+    @Override
     public int getSize() {
         return sizeOf(root);
     }
@@ -85,34 +82,6 @@ public class ImplicitTreap<T> implements Iterable<T>{
 
     public void clear() {
         root = null;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new ImplicitTreapIterator();
-    }
-
-    @Override
-    public String toString() {
-        if (root == null) {
-            return "[]";
-        }
-        List<T> ar = new ArrayList<T>(root.size);
-        walkInOrder(root, ar);
-        return ar.stream()
-                .map(n -> String.valueOf(n))
-                .collect(Collectors.joining(", ", "[", "]"));
-    }
-
-    private void walkInOrder(Node N, List<T> ar) {
-        if (N.L != null)
-            walkInOrder(N.L, ar);
-
-        ar.add(N.value);
-
-        if (N.R != null)
-            walkInOrder(N.R, ar);
-
     }
 
     private Node merge(Node L, Node R) {
@@ -130,7 +99,9 @@ public class ImplicitTreap<T> implements Iterable<T>{
         return N;
     }
 
-    private PairOfNodes split(Node N, int x) {
+    private PairOfNodes split(AbstractNode abstractNode, int x) {
+        Node N = (Node) abstractNode;
+
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -165,28 +136,25 @@ public class ImplicitTreap<T> implements Iterable<T>{
     }
 
     private void checkBounds(int index) {
-        if (root == null || index >= root.size || index < 0)
+        if (root == null || index >= sizeOf(root) || index < 0)
             throw new IndexOutOfBoundsException("Index: " + index + " size: " + sizeOf(root));
     }
 
-    private int sizeOf(Node N) {
+    private int sizeOf(AbstractNode abstractNode) {
+        Node N = (Node) abstractNode;
         if (N == null)
             return 0;
 
         return N.size;
     }
 
-    private class Node {
+    private class Node extends AbstractNode {
         T value;
         double y;
         int size;
 
         Node L;
         Node R;
-
-        {
-            size = 1;
-        }
 
         Node(T value) {
             this(value, Math.random(), null, null);
@@ -201,10 +169,26 @@ public class ImplicitTreap<T> implements Iterable<T>{
             this.y = y;
             this.L = L;
             this.R = R;
+            this.size = 1;
         }
 
         void recalcSize() {
             size = sizeOf(L) + sizeOf(R) + 1;
+        }
+
+        @Override
+        T getValue() {
+            return value;
+        }
+
+        @Override
+        Node getL() {
+            return L;
+        }
+
+        @Override
+        Node getR() {
+            return R;
         }
     }
 
@@ -223,31 +207,6 @@ public class ImplicitTreap<T> implements Iterable<T>{
         PairOfNodes(Node L, Node R) {
             this.L = L;
             this.R = R;
-        }
-    }
-
-    class ImplicitTreapIterator implements Iterator<T> {
-
-        private List<T> list = new ArrayList<>(root.size);
-        int cursor = 0;
-
-        ImplicitTreapIterator() {
-            walkInOrder(root, list);
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return cursor != root.size;
-        }
-
-        @Override
-        public T next() {
-            return list.get(cursor++);
         }
     }
 }

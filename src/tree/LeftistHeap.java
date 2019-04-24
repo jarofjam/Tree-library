@@ -1,13 +1,9 @@
 package tree;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 
-public class LeftistHeap<T> implements Heap<T> {
+public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
 
-    private Node root;
     private final Comparator<T> comparator;
     private int size;
 
@@ -37,7 +33,7 @@ public class LeftistHeap<T> implements Heap<T> {
         if (size == 0)
             return null;
 
-        return root.value;
+        return root.getValue();
     }
 
     @Override
@@ -45,9 +41,9 @@ public class LeftistHeap<T> implements Heap<T> {
         if (size == 0)
             return null;
 
-        T result = root.value;
+        T result = root.getValue();
 
-        root = merge(root.L, root.R);
+        root = merge(root.getL(), root.getR());
         size--;
 
         return result;
@@ -69,17 +65,6 @@ public class LeftistHeap<T> implements Heap<T> {
         size = 0;
     }
 
-    @Override
-    public Object[] toArray() {
-        if (size == 0)
-            return new Object[0];
-
-        List<T> ar = new ArrayList<>(size);
-        walkInOrder(root, ar);
-
-        return ar.toArray();
-    }
-
     public void merge(LeftistHeap anotherHeap) {
         if (anotherHeap == null)
             throw new IllegalArgumentException();
@@ -88,12 +73,10 @@ public class LeftistHeap<T> implements Heap<T> {
         size += anotherHeap.size;
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new LeftistHeapIterator();
-    }
+    private Node merge(AbstractNode abstractNode1, AbstractNode abstractNode2) {
+        Node L = (Node) abstractNode1;
+        Node R = (Node) abstractNode2;
 
-    private Node merge(Node L, Node R) {
         if (comparator == null)
             return mergeAsComparable(L, R);
         else
@@ -146,17 +129,7 @@ public class LeftistHeap<T> implements Heap<T> {
         return N;
     }
 
-    private void walkInOrder(Node N, List<T> ar) {
-        if (N.L != null)
-            walkInOrder(N.L, ar);
-
-        ar.add(N.value);
-
-        if (N.R != null)
-            walkInOrder(N.R, ar);
-    }
-
-    private final class Node {
+    private final class Node extends AbstractNode {
 
         private final T value;
         private Node L;
@@ -196,37 +169,26 @@ public class LeftistHeap<T> implements Heap<T> {
         }
 
         void update() {
-            d = 1;
+            int dR = R == null ? 0 : R.d;
+            int dL = L == null ? 0 : L.d;
 
-            if (L != null) d += L.d;
-            if (R != null) d += R.d;
-        }
-    }
+            d = Math.min(dL, dR) + 1;
 
-    private final class LeftistHeapIterator implements Iterator<T> {
-
-        private ArrayList<T> content;
-        int cursor = 0;
-
-        LeftistHeapIterator() {
-            content = new ArrayList<>(size);
-
-            walkInOrder(root, content);
         }
 
         @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
+        T getValue() {
+            return value;
         }
 
         @Override
-        public boolean hasNext() {
-            return cursor != size;
+        Node getL() {
+            return L;
         }
 
         @Override
-        public T next() {
-            return content.get(cursor++);
+        Node getR() {
+            return R;
         }
     }
 }
