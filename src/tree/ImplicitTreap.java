@@ -1,10 +1,11 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ImplicitTreap<T> {
+public class ImplicitTreap<T> implements Iterable<T>{
 
     private Node root;
 
@@ -87,11 +88,16 @@ public class ImplicitTreap<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return new ImplicitTreapIterator();
+    }
+
+    @Override
     public String toString() {
         if (root == null) {
             return "[]";
         }
-        List<T> ar = new ArrayList<T>();
+        List<T> ar = new ArrayList<T>(root.size);
         walkInOrder(root, ar);
         return ar.stream()
                 .map(n -> String.valueOf(n))
@@ -217,6 +223,31 @@ public class ImplicitTreap<T> {
         PairOfNodes(Node L, Node R) {
             this.L = L;
             this.R = R;
+        }
+    }
+
+    class ImplicitTreapIterator implements Iterator<T> {
+
+        private List<T> list = new ArrayList<>(root.size);
+        int cursor = 0;
+
+        ImplicitTreapIterator() {
+            walkInOrder(root, list);
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor != root.size;
+        }
+
+        @Override
+        public T next() {
+            return list.get(cursor++);
         }
     }
 }
