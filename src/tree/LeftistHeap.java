@@ -1,17 +1,24 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
-public class LeftistHeap {
+public class LeftistHeap<T> {
 
     private Node root;
+    private final Comparator<T> comparator;
     private int size;
 
     public LeftistHeap() {
-        this.root = null;
+        this(null);
     }
 
-    public void add(int value) {
+    public LeftistHeap(Comparator<T> comparator) {
+        this.root = null;
+        this.comparator = comparator;
+    }
+
+    public void add(T value) {
         if (root == null) {
             root = new Node(value);
             size = 1;
@@ -22,18 +29,18 @@ public class LeftistHeap {
         size++;
     }
 
-    public int peek() {
+    public T peek() {
         if (size == 0)
-            return 0;
+            return null;
 
         return root.value;
     }
 
-    public int poll() {
+    public T poll() {
         if (size == 0)
-            return 0;
+            return null;
 
-        int result = root.value;
+        T result = root.value;
 
         root = merge(root.L, root.R);
 
@@ -58,7 +65,7 @@ public class LeftistHeap {
         if (size == 0)
             return new Object[0];
 
-        ArrayList<Integer> ar = new ArrayList<Integer>();
+        ArrayList<T> ar = new ArrayList<>(size);
         walkInOrder(root, ar);
 
         return ar.toArray();
@@ -73,27 +80,59 @@ public class LeftistHeap {
     }
 
     private Node merge(Node L, Node R) {
+        if (comparator == null)
+            return mergeAsComparable(L, R);
+        else
+            return mergeWithComparator(L, R);
+    }
+
+    private Node mergeAsComparable(Node L, Node R) {
         if (L == null) return R;
         if (R == null) return L;
 
         Node N = null;
 
-        if (L.value <= R.value) {
+        Comparable<? super T> leftValue = (Comparable<? super T>) L.value;
+        T rightValue = (T) R.value;
+
+        if (leftValue.compareTo(rightValue) <= 0) {
             N = L;
-            N.R = merge(L.R, R);
+            N.R = mergeAsComparable(L.R, R);
         } else {
             N = R;
-            N.L = merge(L, R.L);
+            N.L = mergeAsComparable(L, R.L);
         }
 
         N.checkChildren();
-
         N.update();
 
         return N;
     }
 
-    private void walkInOrder(Node N, ArrayList<Integer> ar) {
+    private Node mergeWithComparator(Node L, Node R) {
+        if (L == null) return R;
+        if (R == null) return L;
+
+        Node N = null;
+
+        T leftValue = (T) L.value;
+        T rightValue = (T) R.value;
+
+        if (comparator.compare(leftValue, rightValue) <= 0) {
+            N = L;
+            N.R = mergeWithComparator(L.R, R);
+        } else {
+            N = R;
+            N.L = mergeWithComparator(L, R.L);
+        }
+
+        N.checkChildren();
+        N.update();
+
+        return N;
+    }
+
+    private void walkInOrder(Node N, ArrayList<T> ar) {
         if (N.L != null)
             walkInOrder(N.L, ar);
 
@@ -105,20 +144,20 @@ public class LeftistHeap {
 
     private final class Node {
 
-        private final int value;
+        private final T value;
         private Node L;
         private Node R;
 
         private int d = 0;
 
-        Node(int value) {
+        Node(T value) {
             this.value = value;
             this.L = null;
             this.R = null;
             this.d = 1;
         }
 
-        Node(int value, Node L, Node R) {
+        Node(T value, Node L, Node R) {
             this.value = value;
 
             if (L.d < R.d) {
@@ -144,8 +183,8 @@ public class LeftistHeap {
 
         void update() {
             d = 1;
-            if (L != null) d += L.d;
 
+            if (L != null) d += L.d;
             if (R != null) d += R.d;
         }
     }
