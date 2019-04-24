@@ -2,8 +2,10 @@ package tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-public class LeftistHeap<T> {
+public class LeftistHeap<T> implements Iterable<T> {
 
     private Node root;
     private final Comparator<T> comparator;
@@ -43,8 +45,8 @@ public class LeftistHeap<T> {
         T result = root.value;
 
         root = merge(root.L, root.R);
-
         size--;
+        
         return result;
     }
 
@@ -77,6 +79,11 @@ public class LeftistHeap<T> {
 
         root = merge(root, anotherHeap.root);
         size += anotherHeap.size;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LeftistHeapIterator();
     }
 
     private Node merge(Node L, Node R) {
@@ -186,6 +193,33 @@ public class LeftistHeap<T> {
 
             if (L != null) d += L.d;
             if (R != null) d += R.d;
+        }
+    }
+
+    private final class LeftistHeapIterator implements Iterator<T> {
+
+        private ArrayList<T> content;
+        int cursor = 0;
+
+        LeftistHeapIterator() {
+            content = new ArrayList<>(size);
+
+            walkInOrder(root, content);
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+        @Override
+        public T next() {
+            return content.get(cursor++);
         }
     }
 }
