@@ -11,31 +11,30 @@ public class ImplicitTreap<T> implements Tree<T> {
     }
 
     public void add(T value) {
-        Node N = new Node(value);
-        root = merge(root, N);
+        root = merge(root, new Node(value));
     }
 
     public T get(int index) {
         checkBounds(index);
 
-        Node L, R;
+        Node M, R;
 
         PairOfNodes pair = split(root, index);
         R = pair.getR();
 
         pair = split(R, 1);
-        L = pair.getL();
+        M = pair.getL();
 
-        return L == null ? null : L.value;
+        return M == null ? null : M.value;
     }
 
     public void put(int index, T value) {
         checkBounds(index);
 
         PairOfNodes pair = split(root, index);
-
         Node L = pair.getL();
         Node R = pair.getR();
+
         Node M = new Node(value);
 
         root = merge(merge(L, M), R);
@@ -88,11 +87,6 @@ public class ImplicitTreap<T> implements Tree<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return Trees.<T>getIterator(root, sizeOf(root));
-    }
-
-    @Override
     public String toString() {
         return Trees.<T>toString(root, sizeOf(root));
     }
@@ -100,6 +94,11 @@ public class ImplicitTreap<T> implements Tree<T> {
     @Override
     public Object[] toArray() {
         return Trees.<T>toArray(root, sizeOf(root));
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return Trees.<T>getIterator(root, sizeOf(root));
     }
 
     private Node merge(Node L, Node R) {
@@ -113,7 +112,7 @@ public class ImplicitTreap<T> implements Tree<T> {
         else
             N = new Node(R.value, R.y, merge(L, R.L), R.R);
 
-        N.recalcSize();
+        N.updateSize();
         return N;
     }
 
@@ -135,7 +134,7 @@ public class ImplicitTreap<T> implements Tree<T> {
                 R = pair.getR();
             }
             L = new Node(N.value, N.y, N.L, newNode);
-            L.recalcSize();
+            L.updateSize();
         } else {
             if (N.L == null) {
                 L = null;
@@ -145,7 +144,7 @@ public class ImplicitTreap<T> implements Tree<T> {
                 newNode = pair.getR();
             }
             R = new Node(N.value, N.y, newNode, N.R);
-            R.recalcSize();
+            R.updateSize();
         }
 
         return new PairOfNodes(L, R);
@@ -157,10 +156,7 @@ public class ImplicitTreap<T> implements Tree<T> {
     }
 
     private int sizeOf(Node N) {
-        if (N == null)
-            return 0;
-
-        return N.size;
+        return N == null ? 0 : N.size;
     }
 
     private class Node extends Trees.Node<T> {
@@ -170,10 +166,6 @@ public class ImplicitTreap<T> implements Tree<T> {
 
         Node L;
         Node R;
-
-        {
-            size = 1;
-        }
 
         Node(T value) {
             this(value, Math.random(), null, null);
@@ -188,9 +180,10 @@ public class ImplicitTreap<T> implements Tree<T> {
             this.y = y;
             this.L = L;
             this.R = R;
+            this.size = 1;
         }
 
-        void recalcSize() {
+        void updateSize() {
             size = sizeOf(L) + sizeOf(R) + 1;
         }
 

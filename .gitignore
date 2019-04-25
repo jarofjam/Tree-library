@@ -1,8 +1,6 @@
-# folder
-
+# usless folders
 /.idea 
 /out
-/src/test
 
-# Test
-test.java
+# test
+/src/test

@@ -1,15 +1,14 @@
 package tree;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 public class LeftistHeap<T> implements Heap<T> {
 
     private Node root;
-    private final Comparator<T> comparator;
     private int size;
+
+    private final Comparator<T> comparator;
 
     public LeftistHeap() {
         this(null);
@@ -53,11 +52,11 @@ public class LeftistHeap<T> implements Heap<T> {
         return result;
     }
 
-    public void merge(LeftistHeap anotherHeap) {
+    public void mergeWith(LeftistHeap anotherHeap) {
         if (anotherHeap == null)
             throw new IllegalArgumentException();
 
-        root = merge(root, anotherHeap.root);
+        root = merge(root, (Node)anotherHeap.root);
         size += anotherHeap.size;
     }
 

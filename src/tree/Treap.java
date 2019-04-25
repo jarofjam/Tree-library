@@ -1,16 +1,14 @@
 package tree;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Treap<T> implements Tree<T> {
 
     private Node root;
-    private final Comparator<T> comparator;
     private int size;
+
+    private final Comparator<T> comparator;
 
     public Treap() {
         this(null);
@@ -22,38 +20,34 @@ public class Treap<T> implements Tree<T> {
     }
 
     public void add(T x) {
-        if (root == null) {
-            size = 1;
-            root = new Node(x);
-            return;
-        }
-
         if (contains(x))
             return;
 
         size++;
 
-        Node L, R;
-        Node M = new Node(x);
+        Node L, M, R;
 
         PairOfNodes pair = leftSplit(root, x);
         L = pair.getL();
         R = pair.getR();
 
+        M = new Node(x);
+
         root = merge(merge(L, M), R);
     }
 
     public void remove(T x) {
-        Node L, R;
+        Node L, M, R;
 
         PairOfNodes pair = rightSplit(root, x);
         L = pair.getL();
         R = pair.getR();
 
         pair = leftSplit(R, x);
+        M = pair.getL();
         R = pair.getR();
 
-        if (pair.getL() != null)
+        if (M != null)
             size--;
 
         root = merge(L, R);
@@ -96,13 +90,13 @@ public class Treap<T> implements Tree<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return Trees.<T>getIterator(root, size);
+    public String toString() {
+        return Trees.<T>toString(root, size);
     }
 
     @Override
-    public String toString() {
-        return Trees.<T>toString(root, size);
+    public Iterator<T> iterator() {
+        return Trees.<T>getIterator(root, size);
     }
 
     private Node merge(Node L, Node R) {
@@ -124,16 +118,16 @@ public class Treap<T> implements Tree<T> {
         Node R;
         Node newNode = null;
 
-        boolean compareResault;
+        boolean compareResult;
         if (comparator == null) {
             Comparable<? super T> value = (Comparable<? super T>) N.x;
-            compareResault = value.compareTo(x) <= 0;
+
+            compareResult = value.compareTo(x) <= 0;
         } else {
-            T value = (T) N.x;
-            compareResault = comparator.compare(value, x) <= 0;
+            compareResult = comparator.compare(N.x, x) <= 0;
         }
 
-        if (compareResault) {
+        if (compareResult) {
             if (N.R == null) {
                 R = null;
             } else {
@@ -164,16 +158,16 @@ public class Treap<T> implements Tree<T> {
         Node R;
         Node newNode = null;
 
-        boolean compareResault;
+        boolean compareResult;
         if (comparator == null) {
             Comparable<? super T> value = (Comparable<? super T>) N.x;
-            compareResault = value.compareTo(x) < 0;
+
+            compareResult = value.compareTo(x) < 0;
         } else {
-            T value = (T) N.x;
-            compareResault = comparator.compare(value, x) < 0;
+            compareResult = comparator.compare(N.x, x) < 0;
         }
 
-        if (compareResault) {
+        if (compareResult) {
             if (N.R == null) {
                 R = null;
             } else {

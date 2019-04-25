@@ -41,22 +41,6 @@ public class BinaryHeap<T> implements Heap<T> {
     }
 
     @Override
-    public int getSize() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    @Override
-    public void clear() {
-        list = new Object[DEFAULT_INITIAL_CAPACITY];
-        size = 0;
-    }
-
-    @Override
     public void add(T value) {
         if (size == list.length)
             increaseCapacity();
@@ -88,13 +72,24 @@ public class BinaryHeap<T> implements Heap<T> {
     }
 
     @Override
-    public Object[] toArray() {
-        return Arrays.copyOf(list, size);
+    public int getSize() {
+        return size;
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return new BinaryHeapIterator();
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public void clear() {
+        list = new Object[DEFAULT_INITIAL_CAPACITY];
+        size = 0;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return Arrays.copyOf(list, size);
     }
 
     @Override
@@ -103,6 +98,11 @@ public class BinaryHeap<T> implements Heap<T> {
                 .limit(size)
                 .map(n -> String.valueOf(n))
                 .collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new BinaryHeapIterator();
     }
 
     private void increaseCapacity() {

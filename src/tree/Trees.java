@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class Trees {
-
     static <T> Iterator<T> getIterator(Node root, int size) {
         return new Iterator<T>() {
             private List<T> list;
