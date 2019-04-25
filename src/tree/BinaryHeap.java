@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BinaryHeap<T> implements Heap<T> {
 
@@ -98,13 +99,10 @@ public class BinaryHeap<T> implements Heap<T> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < size; i++) {
-            sb.append(list[i]);
-            if (i != size - 1)
-                sb.append(", ");
-        }
-        return sb.append("]").toString();
+        return Arrays.stream(list)
+                .limit(size)
+                .map(n -> String.valueOf(n))
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     private void increaseCapacity() {

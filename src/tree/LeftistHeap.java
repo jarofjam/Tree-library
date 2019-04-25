@@ -1,9 +1,13 @@
 package tree;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
+public class LeftistHeap<T> implements Heap<T> {
 
+    private Node root;
     private final Comparator<T> comparator;
     private int size;
 
@@ -33,7 +37,7 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
         if (size == 0)
             return null;
 
-        return root.getValue();
+        return root.value;
     }
 
     @Override
@@ -41,12 +45,20 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
         if (size == 0)
             return null;
 
-        T result = root.getValue();
+        T result = root.value;
 
-        root = merge(root.getL(), root.getR());
+        root = merge(root.L, root.R);
         size--;
 
         return result;
+    }
+
+    public void merge(LeftistHeap anotherHeap) {
+        if (anotherHeap == null)
+            throw new IllegalArgumentException();
+
+        root = merge(root, anotherHeap.root);
+        size += anotherHeap.size;
     }
 
     @Override
@@ -65,18 +77,22 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
         size = 0;
     }
 
-    public void merge(LeftistHeap anotherHeap) {
-        if (anotherHeap == null)
-            throw new IllegalArgumentException();
-
-        root = merge(root, anotherHeap.root);
-        size += anotherHeap.size;
+    @Override
+    public Object[] toArray() {
+        return Trees.<T>toArray(root, size);
     }
 
-    private Node merge(AbstractNode abstractNode1, AbstractNode abstractNode2) {
-        Node L = (Node) abstractNode1;
-        Node R = (Node) abstractNode2;
+    @Override
+    public String toString() {
+        return Trees.<T>toString(root, size);
+    }
 
+    @Override
+    public Iterator<T> iterator() {
+        return Trees.<T>getIterator(root, size);
+    }
+
+    private Node merge(Node L, Node R) {
         if (comparator == null)
             return mergeAsComparable(L, R);
         else
@@ -129,7 +145,7 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
         return N;
     }
 
-    private final class Node extends AbstractNode {
+    private final class Node extends Trees.Node<T> {
 
         private final T value;
         private Node L;
@@ -142,20 +158,6 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
             this.L = null;
             this.R = null;
             this.d = 1;
-        }
-
-        Node(T value, Node L, Node R) {
-            this.value = value;
-
-            if (L.d < R.d) {
-                this.R = L;
-                this.L = R;
-            } else {
-                this.L = L;
-                this.R = R;
-            }
-
-            this.d = L.d + R.d + 1;
         }
 
         void checkChildren() {
@@ -173,7 +175,6 @@ public class LeftistHeap<T> extends TreeStructured<T> implements Heap<T> {
             int dL = L == null ? 0 : L.d;
 
             d = Math.min(dL, dR) + 1;
-
         }
 
         @Override

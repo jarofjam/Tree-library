@@ -1,9 +1,10 @@
 package tree;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
-public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
+public class ImplicitTreap<T> implements Tree<T> {
+
+    private Node root;
 
     public ImplicitTreap() {
         root = null;
@@ -11,7 +12,7 @@ public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
 
     public void add(T value) {
         Node N = new Node(value);
-        root = merge((Node) root, N);
+        root = merge(root, N);
     }
 
     public T get(int index) {
@@ -76,12 +77,29 @@ public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
         return sizeOf(root);
     }
 
+    @Override
     public boolean isEmpty() {
         return sizeOf(root) == 0;
     }
 
+    @Override
     public void clear() {
         root = null;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return Trees.<T>getIterator(root, sizeOf(root));
+    }
+
+    @Override
+    public String toString() {
+        return Trees.<T>toString(root, sizeOf(root));
+    }
+
+    @Override
+    public Object[] toArray() {
+        return Trees.<T>toArray(root, sizeOf(root));
     }
 
     private Node merge(Node L, Node R) {
@@ -99,9 +117,7 @@ public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
         return N;
     }
 
-    private PairOfNodes split(AbstractNode abstractNode, int x) {
-        Node N = (Node) abstractNode;
-
+    private PairOfNodes split(Node N, int x) {
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -136,25 +152,28 @@ public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
     }
 
     private void checkBounds(int index) {
-        if (root == null || index >= sizeOf(root) || index < 0)
+        if (root == null || index >= root.size || index < 0)
             throw new IndexOutOfBoundsException("Index: " + index + " size: " + sizeOf(root));
     }
 
-    private int sizeOf(AbstractNode abstractNode) {
-        Node N = (Node) abstractNode;
+    private int sizeOf(Node N) {
         if (N == null)
             return 0;
 
         return N.size;
     }
 
-    private class Node extends AbstractNode {
+    private class Node extends Trees.Node<T> {
         T value;
         double y;
         int size;
 
         Node L;
         Node R;
+
+        {
+            size = 1;
+        }
 
         Node(T value) {
             this(value, Math.random(), null, null);
@@ -169,7 +188,6 @@ public class ImplicitTreap<T> extends TreeStructured<T> implements Tree<T> {
             this.y = y;
             this.L = L;
             this.R = R;
-            this.size = 1;
         }
 
         void recalcSize() {

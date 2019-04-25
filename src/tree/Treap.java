@@ -2,10 +2,13 @@ package tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Treap<T> extends TreeStructured<T> implements Tree<T> {
+public class Treap<T> implements Tree<T> {
 
+    private Node root;
     private final Comparator<T> comparator;
     private int size;
 
@@ -76,13 +79,30 @@ public class Treap<T> extends TreeStructured<T> implements Tree<T> {
         return this.size;
     }
 
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    @Override
     public void clear() {
         root = null;
         size = 0;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return Trees.<T>toArray(root, size);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return Trees.<T>getIterator(root, size);
+    }
+
+    @Override
+    public String toString() {
+        return Trees.<T>toString(root, size);
     }
 
     private Node merge(Node L, Node R) {
@@ -96,8 +116,7 @@ public class Treap<T> extends TreeStructured<T> implements Tree<T> {
 
     }
 
-    private PairOfNodes leftSplit(AbstractNode abstractNode, T x) {
-        Node N = (Node) abstractNode;
+    private PairOfNodes leftSplit(Node N, T x) {
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -137,8 +156,7 @@ public class Treap<T> extends TreeStructured<T> implements Tree<T> {
         return new PairOfNodes(L, R);
     }
 
-    private PairOfNodes rightSplit(AbstractNode abstractNode, T x) {
-        Node N = (Node) abstractNode;
+    private PairOfNodes rightSplit(Node N, T x) {
         if (N == null)
             return new PairOfNodes(null, null);
 
@@ -178,7 +196,7 @@ public class Treap<T> extends TreeStructured<T> implements Tree<T> {
         return new PairOfNodes(L, R);
     }
 
-    private final class Node extends AbstractNode {
+    private final class Node extends Trees.Node<T> {
         T x;
         double y;
 
