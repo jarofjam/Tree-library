@@ -93,6 +93,19 @@ public class BinaryHeap<T> implements Heap<T> {
     }
 
     @Override
+    public <T2> T2[] toArray(T2[] a) {
+        if (a.length < size)
+            return (T2[]) Arrays.copyOf(list, size, a.getClass());
+
+        System.arraycopy(list, 0, a, 0, size);
+
+        if (a.length > size)
+            a[size] = null;
+
+        return a;
+    }
+
+    @Override
     public String toString() {
         return Arrays.stream(list)
                 .limit(size)
