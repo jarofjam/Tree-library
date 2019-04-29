@@ -5,11 +5,12 @@ import java.util.Iterator;
 
 /**
  * <p>This class is an implementation of a set.</p>
- * <p>An instance of this class can contain any type of elements that could be compared
- * via comparator in a natural order.<br>
+ * <p>The implementation is based on a treap.</p>
+ * <p>An instance of this class can contain any type of elements that could be ordered
+ * via comparator or in a natural order.<br>
  * Please, note that all elements should be unique.
- * An attempt to add a duplicate element will no lead to anything.</p>
- * <p>This class offers an almost O(n*log(n)) time performance
+ * An attempt to add a duplicate element will not lead to anything.</p>
+ * <p>This class offers an almost O(log(n)) time performance
  * on add/remove/contains operations.</p>
  * <p><strong>Note that this implementation is not synchronized.</strong></p>
  * @param <T> type of element to be stored in this treap.
@@ -25,7 +26,7 @@ public class Treap<T> implements Tree<T> {
     private int size;
 
     /**
-     * The comparator or null if treap orders elements as comparable.
+     * The comparator or null if treap orders elements in a natural order.
      */
     private final Comparator<? super T> comparator;
 
@@ -37,8 +38,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Creates a treap with a specified comparator
-     * @param comparator the comparator that will be used to order elements in this treap.
+     * Creates a treap with a specified comparator.
+     * @param comparator comparator that will be used to order elements in this treap.
      */
     public Treap(Comparator<? super T> comparator) {
         root = null;
@@ -46,8 +47,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Adds the specified element into this treap.
-     * @param x element to be added to this treap.
+     * Adds the specified element into this set.
+     * @param x element to be added to this set.
      * @throws NullPointerException if the specified element is null.
      */
     public void add(T x) {
@@ -71,9 +72,9 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Removes the specified element from this treap.
-     * @param x element to be removed from this treap.
-     * @return true if this treap did contain the element; false otherwise.
+     * Removes the specified element from this set.
+     * @param x element to be removed from this set.
+     * @return true if this set did contain the element, false otherwise.
      */
     public boolean remove(T x) {
         boolean result = false;
@@ -97,9 +98,9 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns true only if this treap contains the specified element.
-     * @param x element whose presence in this treap is to be tested.
-     * @return true if this treap contains the specified element; false otherwise.
+     * Returns true only if this set contains the specified element.
+     * @param x element whose presence in this set is to be tested.
+     * @return true if this set contains the specified element, false otherwise.
      */
     public boolean contains(T x) {
         Node L, M, R;
@@ -117,8 +118,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns the size of this treap.
-     * @return the size of this treap.
+     * Returns the size of this set.
+     * @return the size of this set.
      */
     @Override
     public int getSize() {
@@ -126,8 +127,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns true if this treap contains no elements.
-     * @return true if this treap contains no elements; false otherwise
+     * Returns true if this set contains no elements.
+     * @return true if this set contains no elements, false otherwise
      */
     @Override
     public boolean isEmpty() {
@@ -135,8 +136,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Removes all of the elements from this treap.
-     * The treap will be empty after this call returns.
+     * Removes all of the elements from this set.
+     * This set will be empty after this call returns.
      */
     @Override
     public void clear() {
@@ -145,8 +146,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns an array containing all of the elements from this treap.
-     * @return an array containing all of the elements from this treap.
+     * Returns an array containing all of elements from this set.
+     * @return array containing all of elements from this set.
      */
     @Override
     public Object[] toArray() {
@@ -154,11 +155,11 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns an array containing all if the elements from this treap.
-     * @param a the array into which the elements of the queue are to
+     * Returns an array containing all the elements from this set.
+     * @param a the array into which the elements of the this set are to
      * be stored, if it is big enough; otherwise, a new array of the
-     * same runtime type is allocated for this purpose.
-     * @return an array containing all of the elements from this treap.
+     * same type is allocated.
+     * @return an array containing all of the elements from this set.
      */
     @Override
     public <T2> T2[] toArray(T2[] a) {
@@ -166,8 +167,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns a string representation of this treap.
-     * @return a string representation of this treap.
+     * Returns a string representation of this set.
+     * @return string representation of this set.
      */
     @Override
     public String toString() {
@@ -175,8 +176,8 @@ public class Treap<T> implements Tree<T> {
     }
 
     /**
-     * Returns an iterator over the elements from this treap.
-     * @return an iterator over the elements from this treap.
+     * Returns an iterator over the elements from this set.
+     * @return iterator over the elements from this set.
      */
     @Override
     public Iterator<T> iterator() {
@@ -202,9 +203,10 @@ public class Treap<T> implements Tree<T> {
 
     /**
      * Splits a specified treap into two new treaps using the key.
-     * @param N treap to be splitted
-     * @param x key (if present in the primordial treap(N) <strong>will fall into the left of new treaps</strong>).
-     * @return a pair of treaps that contain all element from the one that got splitted.
+     * @param N treap to be splitted.
+     * @param x split key. <strong>If present in the primordial treap(N)
+     * will fall into the left of new treaps</strong>.
+     * @return a pair of treaps that contain all the elements from the one that got splitted.
      */
     private PairOfNodes leftSplit(Node N, T x) {
         if (N == null)
@@ -249,8 +251,9 @@ public class Treap<T> implements Tree<T> {
     /**
      * Splits a specified treap into two new treaps using the key.
      * @param N treap to be splitted
-     * @param x key (if present in the primordial treap(N) <strong>will fall into the right of new treaps</strong>).
-     * @return a pair of treaps that contain all element from the one that got splitted.
+     * @param x split key. <strong>If present in the primordial treap(N)
+     * will fall into the right of new treaps</strong>).
+     * @return a pair of treaps that contain all the elements from the one that got splitted.
      */
     private PairOfNodes rightSplit(Node N, T x) {
         if (N == null)
@@ -317,7 +320,7 @@ public class Treap<T> implements Tree<T> {
         Node R;
 
         /**
-         * Created a new node with the specified value.
+         * Creates a new node with the specified value.
          * @param x value to be stored and used as a first key.
          */
         Node(T x) {
@@ -325,7 +328,7 @@ public class Treap<T> implements Tree<T> {
         }
 
         /**
-         * Created a new node with the specified value and both children.
+         * Creates a new node with the specified value and both children.
          * @param x value to be stored and used as a first key.
          * @param L left child.
          * @param R right child.
@@ -335,7 +338,7 @@ public class Treap<T> implements Tree<T> {
         }
 
         /**
-         * Created a new node with the specified value, second key and both children.
+         * Creates a new node with the specified value, second key and both children.
          * @param x value to be stored and used as a first key.
          * @param y second key.
          * @param L left child.
@@ -367,7 +370,7 @@ public class Treap<T> implements Tree<T> {
         }
 
         /**
-         * Return right child.
+         * Returns right child.
          * @return right child.
          */
         @Override
@@ -379,8 +382,9 @@ public class Treap<T> implements Tree<T> {
     /**
      * Helper class.
      * Allows methods to return two treaps at ones.
-     * An instance contains two treaps, always after splitting operations.
-     * therefore they are referred as left and right.
+     * Is used in slitting methods.
+     * An instance contains two treaps, which are
+     * are referred as left and right.
      */
     private class PairOfNodes {
         /**
@@ -409,7 +413,7 @@ public class Treap<T> implements Tree<T> {
         }
 
         /**
-         * Creates new pair of treaps..
+         * Creates a new pair of treaps.
          * @param L first treap (will be referred as left).
          * @param R second treap (will be referred as right).
          */
