@@ -9,13 +9,6 @@ On the contrary, it is a logically related structure with common interfaces and 
 
 ### Javadocs
 <p>Each class contains detailed comments based on which javadocs are created.<br>
-Javadocs are present in two versions: general (only public and protected elements, documentation as it could be, if it was official) 
+Javadocs are present in two versions: general (only public and protected elements, documentation as it could be if it was official) 
 and full (absolutely all elements, which allows better tracing of the internal structure of the package).</p>
-<p>See javadoc.rar for general documentation and javadoc-full.rar for full documentation.</p>
-
-### Future plans
-<p>In addition to re-mentioning the obvious plans to expand the contents of the package, I want to draw attention to another problem. 
-A simple example of implementation is obviously not enough to allow a person to understand 
-the principle of the work of those other trees.</p>
-<p>As an integral part of the project, I see the existence of a theory explaining the mechanisms of operation of these structures.<br>
-The theory will appear in the wiki pages section and it will be written in Russian.</p>
+<p>See javadoc.rar for general documentation and javadoc-full.rar for the full documentation.</p>
